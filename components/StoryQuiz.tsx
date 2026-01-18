@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CheckCircle, XCircle, Award, RefreshCw, ArrowRight, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import { useAuth } from '../context/AuthContext';
 
 // Sound Effects using Web Audio API
 const playSound = (type: 'correct' | 'wrong' | 'success' | 'fail') => {
@@ -134,6 +135,8 @@ export const StoryQuiz: React.FC<StoryQuizProps> = ({ quizData, onClose, onCompl
     };
 
     if (isCompleted) {
+        const canSavePoints = !useAuth().isAuthenticated;
+        
         return (
             <div className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
                 <motion.div 
@@ -143,11 +146,36 @@ export const StoryQuiz: React.FC<StoryQuizProps> = ({ quizData, onClose, onCompl
                 >
                     <Award size={80} className="mx-auto text-yellow-500 mb-6 animate-bounce" />
                     <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">
-                        {score === quizData.length ? '🌟 SUPER! 🌟' : 'Good Job! 👍'}
+                        {score === quizData.length ? (lang === 'ar' ? '🌟 رائع جداً! 🌟' : '🌟 SUPER! 🌟') : (lang === 'ar' ? 'عمل جيد! 👍' : 'Good Job! 👍')}
                     </h2>
-                    <p className="text-2xl font-bold text-gray-600 dark:text-gray-300 mb-8">
+                    <p className="text-2xl font-bold text-gray-600 dark:text-gray-300 mb-4">
                         {t.score[lang]} <span className="text-primary">{score} / {quizData.length}</span>
                     </p>
+
+                    {canSavePoints && (
+                        <div className="mb-8 p-4 bg-primary/10 rounded-2xl border border-primary/20">
+                            <p className="text-primary font-bold mb-4">
+                                {lang === 'ar' 
+                                    ? 'سجل دخولك الآن لحفظ هذه النقاط في رصيدك!' 
+                                    : 'Sign in now to save these points to your account!'}
+                            </p>
+                            <div className="flex gap-2 justify-center">
+                                <a 
+                                    href="/login"
+                                    className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-lg shadow-primary/20"
+                                >
+                                    {lang === 'ar' ? 'دخول' : 'Login'}
+                                </a>
+                                <a 
+                                    href="/register"
+                                    className="px-4 py-2 bg-white dark:bg-gray-800 text-primary border border-primary rounded-lg text-sm font-bold"
+                                >
+                                    {lang === 'ar' ? 'حساب جديد' : 'Register'}
+                                </a>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="flex gap-4 justify-center">
                         <button 
                             onClick={() => {

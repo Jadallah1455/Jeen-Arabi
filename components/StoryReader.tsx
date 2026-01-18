@@ -371,6 +371,14 @@ export const StoryReader: React.FC<StoryReaderProps> = ({ id, pdfUrl, title, cov
                     onComplete={(score, total) => {
                          if (id && isAuthenticated) {
                             api.post(`/users/history/${id}/quiz`, { score, total }).catch(console.error);
+                         } else if (id && !isAuthenticated) {
+                            // Save locally for guests to sync later
+                            localStorage.setItem('pending_quiz_result', JSON.stringify({
+                                storyId: id,
+                                score,
+                                total,
+                                timestamp: Date.now()
+                            }));
                          }
                     }}
                 />

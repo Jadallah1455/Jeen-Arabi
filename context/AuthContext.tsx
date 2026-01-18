@@ -18,11 +18,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const login = (token: string, userData: any) => {
+    const login = async (token: string, userData: any) => {
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(userData));
         setUser(userData);
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+        // Check for pending quiz points and sync
+        const pendingResult = localStorage.getItem('pending_quiz_result');
+        if (pendingResult) {
+            try {
+                const { storyId, score, total } = JSON.parse(pendingResult);
+                await api.post(`/users/history/${storyId}/quiz`, { score, total });
+                localStorage.removeItem('pending_quiz_result');
+                console.log('Synced pending points for story:', storyId);
+            } catch (error) {
+                console.error('Failed to sync pending points:', error);
+            }
+        }
     };
 
     const logout = () => {
