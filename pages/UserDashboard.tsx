@@ -87,7 +87,10 @@ export const UserDashboard: React.FC<DashboardProps> = ({ lang }) => {
     }, [lang]);
 
     return (
-        <div className="min-h-screen bg-gray-50/50 dark:bg-dark-bg transition-colors duration-500 pb-12">
+        <div 
+            dir={isRTL ? 'rtl' : 'ltr'}
+            className="min-h-screen bg-gray-50/50 dark:bg-dark-bg transition-colors duration-500 pb-12"
+        >
             <SEO
                 title={t.title}
                 lang={lang}
@@ -161,7 +164,11 @@ export const UserDashboard: React.FC<DashboardProps> = ({ lang }) => {
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-white/20 transition-all"></div>
                                 <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
                                     <div className="w-32 h-44 rounded-2xl overflow-hidden shadow-2xl shrink-0 rotate-[-2deg] group-hover:rotate-0 transition-transform">
-                                        <img src={stats.resume.coverImage} className="w-full h-full object-cover" />
+                                        <img 
+                                            src={stats.resume.coverImage} 
+                                            alt={`${stats.resume.title[lang] || stats.resume.title.ar || stats.resume.title.en || stats.resume.title.fr} ${isRTL ? 'غلاف' : 'cover'}`}
+                                            className="w-full h-full object-cover" 
+                                        />
                                     </div>
                                     <div className="flex-1 text-center md:text-left rtl:md:text-right">
                                         <span className="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-sm font-bold mb-4">{t.continueReading}</span>

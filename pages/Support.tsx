@@ -108,7 +108,10 @@ const Support: React.FC<SupportProps> = ({ lang: propLang }) => {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50/50 dark:bg-dark-bg transition-colors duration-500 pt-24 pb-20">
+        <div 
+            dir={isRTL ? 'rtl' : 'ltr'}
+            className="min-h-screen bg-gray-50/50 dark:bg-dark-bg transition-colors duration-500 pt-24 pb-20"
+        >
             <SEO
                 title={tSupport.title}
                 description={(TRANSLATIONS[lang as keyof typeof TRANSLATIONS] as any).seo.support.description}

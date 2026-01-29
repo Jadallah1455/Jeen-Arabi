@@ -16,7 +16,10 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
   const isRTL = lang === 'ar';
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-80px)] bg-background dark:bg-dark-bg transition-colors duration-300 overflow-x-hidden">
+    <div 
+      dir={isRTL ? 'rtl' : 'ltr'}
+      className="flex flex-col min-h-[calc(100vh-80px)] bg-background dark:bg-dark-bg transition-colors duration-300 overflow-x-hidden"
+    >
       <SEO
         title={TRANSLATIONS[lang].seo.home.title}
         description={TRANSLATIONS[lang].seo.home.description}

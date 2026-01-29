@@ -82,7 +82,10 @@ export const AccountSettings: React.FC<SettingsProps> = ({ lang }) => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50/50 dark:bg-dark-bg transition-colors duration-500 pb-20">
+        <div 
+            dir={isRTL ? 'rtl' : 'ltr'}
+            className="min-h-screen bg-gray-50/50 dark:bg-dark-bg transition-colors duration-500 pb-20"
+        >
             <SEO title={t.title} lang={lang} />
 
             <div className="max-w-4xl mx-auto px-4 pt-32">
@@ -104,10 +107,16 @@ export const AccountSettings: React.FC<SettingsProps> = ({ lang }) => {
 
                         <form onSubmit={handleUpdateProfile} className="space-y-6">
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-500 block">{t.username}</label>
+                                <label 
+                                    htmlFor="settings-username"
+                                    className="text-sm font-bold text-gray-500 block"
+                                >
+                                    {t.username}
+                                </label>
                                 <div className="relative">
-                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} aria-hidden="true" />
                                     <input
+                                        id="settings-username"
                                         type="text"
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
@@ -117,10 +126,16 @@ export const AccountSettings: React.FC<SettingsProps> = ({ lang }) => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-500 block">{t.email}</label>
+                                <label 
+                                    htmlFor="settings-email"
+                                    className="text-sm font-bold text-gray-500 block"
+                                >
+                                    {t.email}
+                                </label>
                                 <div className="relative">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} aria-hidden="true" />
                                     <input
+                                        id="settings-email"
                                         type="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
@@ -149,8 +164,14 @@ export const AccountSettings: React.FC<SettingsProps> = ({ lang }) => {
 
                         <form onSubmit={handleChangePassword} className="space-y-6">
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-500 block">{t.oldPassword}</label>
+                                <label 
+                                    htmlFor="settings-old-password"
+                                    className="text-sm font-bold text-gray-500 block"
+                                >
+                                    {t.oldPassword}
+                                </label>
                                 <input
+                                    id="settings-old-password"
                                     type="password"
                                     value={oldPassword}
                                     onChange={(e) => setOldPassword(e.target.value)}
@@ -159,8 +180,14 @@ export const AccountSettings: React.FC<SettingsProps> = ({ lang }) => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-500 block">{t.newPassword}</label>
+                                <label 
+                                    htmlFor="settings-new-password"
+                                    className="text-sm font-bold text-gray-500 block"
+                                >
+                                    {t.newPassword}
+                                </label>
                                 <input
+                                    id="settings-new-password"
                                     type="password"
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
@@ -169,8 +196,14 @@ export const AccountSettings: React.FC<SettingsProps> = ({ lang }) => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-500 block">{t.confirmPassword}</label>
+                                <label 
+                                    htmlFor="settings-confirm-password"
+                                    className="text-sm font-bold text-gray-500 block"
+                                >
+                                    {t.confirmPassword}
+                                </label>
                                 <input
+                                    id="settings-confirm-password"
                                     type="password"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}

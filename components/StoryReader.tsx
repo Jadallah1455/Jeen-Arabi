@@ -23,10 +23,18 @@ const CanvasPage = React.memo(({ pageNumber, renderPage, isRendered }: { pageNum
 
     return (
         <div className="w-full h-full flex items-center justify-center bg-white">
-            {!isRendered && <Loader2 className="animate-spin text-gray-300" />}
+            {!isRendered && (
+                <>
+                    <Loader2 className="animate-spin text-gray-300" aria-hidden="true" />
+                    <span className="sr-only">
+                        Loading page {pageNumber}
+                    </span>
+                </>
+            )}
             <canvas
                 ref={canvasRef}
                 className={`w-full h-full object-contain ${!isRendered ? 'hidden' : ''}`}
+                aria-label={`Page ${pageNumber}`}
             />
         </div>
     );

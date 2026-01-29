@@ -33,11 +33,17 @@ export const Library: React.FC<LibraryProps> = ({ lang, stories, categories, onU
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Auto-open story from notification site state
+    // Auto-open story from notification site state OR query parameter
     useEffect(() => {
         const state = location.state as { openStoryId?: string };
-        if (state?.openStoryId) {
-            const story = stories.find(s => s.id === state.openStoryId);
+        const params = new URLSearchParams(location.search);
+        const storyIdFromQuery = params.get('story');
+        
+        // Priority: query parameter > state
+        const storyId = storyIdFromQuery || state?.openStoryId;
+        
+        if (storyId) {
+            const story = stories.find(s => s.id === storyId);
             if (story) {
                 setSelectedStory(story);
                 // Clear state so it doesn't re-open on refresh
@@ -237,7 +243,10 @@ export const Library: React.FC<LibraryProps> = ({ lang, stories, categories, onU
     );
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-dark-bg transition-colors duration-300 py-8 px-4 sm:px-6 lg:px-8">
+        <div 
+            dir={isRTL ? 'rtl' : 'ltr'}
+            className="min-h-screen bg-gray-50 dark:bg-dark-bg transition-colors duration-300 py-8 px-4 sm:px-6 lg:px-8"
+        >
             <SEO
                 title={selectedStory ? (selectedStory.title[lang] || selectedStory.title.en) : t.title}
                 description={selectedStory ? (selectedStory.description[lang] || selectedStory.description.en) : TRANSLATIONS[lang].seo.library.description}
@@ -273,16 +282,17 @@ export const Library: React.FC<LibraryProps> = ({ lang, stories, categories, onU
                 {/* Premium Search Bar */}
                 <div className="relative group max-w-6xl mx-auto mb-16 animate-fade-in">
                     <div className="absolute inset-x-0 -bottom-6 h-16 bg-primary/10 blur-3xl rounded-full opacity-60 group-focus-within:opacity-100 transition-opacity"></div>
-                    <div className="relative bg-white dark:bg-dark-card border-2 border-gray-100 dark:border-gray-800 focus-within:border-primary/40 rounded-[32px] shadow-2xl overflow-hidden transition-all flex items-center pr-2 p-1">
-                        <div className="pl-6 text-gray-400 group-focus-within:text-primary transition-colors">
-                            <Search size={22} />
+                    <div className="relative bg-white dark:bg-dark-card border-2 border-gray-100 dark:border-gray-800 group-focus-within:border-primary group-focus-within:shadow-[0_0_0_4px_rgba(108,99,255,0.1)] rounded-[32px] shadow-2xl transition-all flex items-center px-6 py-1">
+                        <div className="text-gray-400 group-focus-within:text-primary transition-colors">
+                            <Search size={22} aria-hidden="true" />
                         </div>
                         <input
                             type="text"
                             value={searchQuery}
                             onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                             placeholder={isRTL ? "ابحث عن قصة سحرية بالاسم أو التصنيف..." : "Search for a magical story by title or category..."}
-                            className="w-full pl-4 pr-4 py-8 bg-transparent text-xl font-bold outline-none dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600"
+                            className="w-full pl-4 pr-4 py-8 bg-transparent text-xl font-bold outline-none focus-visible:outline-none dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600"
+                            aria-label={isRTL ? 'بحث في القصص' : 'Search stories'}
                         />
                         {searchQuery && (
                             <button
@@ -408,13 +418,14 @@ export const Library: React.FC<LibraryProps> = ({ lang, stories, categories, onU
                                     style={{ animationDelay: `${0.1 + (index * 0.05)}s` }}
                                 >
                                     {/* Image Container */}
-                                    <div className="relative h-96 overflow-hidden">
+                                    <div className="relative h-96 overflow-hidden rounded-t-3xl group/img">
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-60"></div>
                                         <img
                                             src={story.coverImage}
-                                            alt={displayTitle}
+                                            alt={story.title[lang] || story.title.ar || story.title.en}
                                             loading="lazy"
-                                            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                                            decoding="async"
+                                            className="w-full h-full object-cover group-hover/img:scale-110 transition-all duration-700 ease-out"
                                         />
                                         <div className="absolute top-3 right-3 z-30 flex gap-2">
                                             <button
@@ -507,7 +518,7 @@ export const Library: React.FC<LibraryProps> = ({ lang, stories, categories, onU
                             onClick={() => setCurrentPage(prev => prev - 1)}
                             className="p-3 bg-white dark:bg-dark-card border border-gray-100 dark:border-gray-800 rounded-xl disabled:opacity-30 transition-all hover:bg-gray-50 dark:hover:bg-gray-800"
                         >
-                            <ChevronLeft className={isRTL ? 'rotate-180' : ''} />
+                            {isRTL ? <ChevronRight /> : <ChevronLeft />}
                         </button>
                         <div className="flex gap-2">
                             {Array.from({ length: Math.ceil(filteredStories.length / storiesPerPage) }).map((_, i) => (
@@ -527,7 +538,7 @@ export const Library: React.FC<LibraryProps> = ({ lang, stories, categories, onU
                             onClick={() => setCurrentPage(prev => prev + 1)}
                             className="p-3 bg-white dark:bg-dark-card border border-gray-100 dark:border-gray-800 rounded-xl disabled:opacity-30 transition-all hover:bg-gray-50 dark:hover:bg-gray-800"
                         >
-                            <ChevronRight className={isRTL ? 'rotate-180' : ''} />
+                            {isRTL ? <ChevronLeft /> : <ChevronRight />}
                         </button>
                     </div>
                 )}
@@ -547,7 +558,7 @@ export const Library: React.FC<LibraryProps> = ({ lang, stories, categories, onU
                             <div className="w-full lg:max-w-[40%] lg:min-w-[300px] h-64 sm:h-72 lg:h-auto relative bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center p-4 lg:p-8 shrink-0 lg:overflow-y-auto">
                                 <img
                                     src={selectedStory.coverImage}
-                                    alt="Cover"
+                                    alt={`${selectedStory.title[lang] || selectedStory.title.ar || selectedStory.title.en || 'Story'} ${isRTL ? 'غلاف' : 'cover'}`}
                                     className="w-full h-full lg:h-auto lg:max-h-[70vh] object-cover lg:object-contain rounded-2xl shadow-2xl"
                                 />
                                 {/* Floating Close Button for Mobile */}

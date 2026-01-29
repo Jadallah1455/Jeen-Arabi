@@ -11,7 +11,10 @@ export const NotFound: React.FC<NotFoundProps> = ({ lang }) => {
     const isAr = lang === 'ar';
 
     return (
-        <div className="min-h-[80vh] flex flex-col items-center justify-center text-center px-4">
+        <div 
+            dir={isAr ? 'rtl' : 'ltr'}
+            className="min-h-[80vh] flex flex-col items-center justify-center text-center px-4"
+        >
             <div className="relative mb-8">
                 <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full animate-pulse"></div>
                 <h1 className="relative text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary animate-bounce">

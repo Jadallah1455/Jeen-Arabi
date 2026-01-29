@@ -143,7 +143,7 @@ export const AnalyticsDashboard: React.FC<{ lang: string }> = ({ lang }) => {
                 <h3 className="text-xl font-black mb-4 text-gray-900 dark:text-white">
                     {lang === 'ar' ? 'النمو اليومي' : 'Daily Growth'}
                 </h3>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={300} minHeight={300}>
                     <AreaChart data={visitorStats?.dailyGrowth || []}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="date" />
@@ -164,7 +164,7 @@ export const AnalyticsDashboard: React.FC<{ lang: string }> = ({ lang }) => {
                         <Monitor size={24} className="text-primary" />
                         {lang === 'ar' ? 'توزيع الأجهزة' : 'Device Breakdown'}
                     </h3>
-                    <ResponsiveContainer width="100%" height={250}>
+                    <ResponsiveContainer width="100%" height={250} minHeight={250}>
                         <RePieChart>
                             <Pie
                                 data={deviceData?.devices || []}
@@ -190,7 +190,7 @@ export const AnalyticsDashboard: React.FC<{ lang: string }> = ({ lang }) => {
                     <h3 className="text-xl font-black mb-4 text-gray-900 dark:text-white">
                         {lang === 'ar' ? 'أشهر المتصفحات' : 'Top Browsers'}
                     </h3>
-                    <ResponsiveContainer width="100%" height={250}>
+                    <ResponsiveContainer width="100%" height={250} minHeight={250}>
                         <ReBarChart data={deviceData?.browsers || []}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="browser" />
@@ -321,7 +321,7 @@ export const AnalyticsDashboard: React.FC<{ lang: string }> = ({ lang }) => {
                     {lang === 'ar' ? 'أداء السوشال ميديا' : 'Social Media Performance'}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <ResponsiveContainer width="100%" height={250}>
+                    <ResponsiveContainer width="100%" height={250} minHeight={250}>
                         <ReBarChart data={socialStats?.platforms || []}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="platform" />

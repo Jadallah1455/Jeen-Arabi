@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { AnalyticsDashboard } from '../components/AnalyticsDashboard';
 import { ReviewsManagement } from '../components/ReviewsManagement';
+import { SEO } from '../components/SEO';
 
 // Import pdfjs (ensure it's installed or available via CDN in index.html if install fails)
 import * as pdfjsLib from 'pdfjs-dist';
@@ -711,8 +712,8 @@ export const Admin: React.FC<AdminProps> = ({ lang, stories, setStories, subscri
                     </h3>
                     <div className="relative h-[350px] w-full" dir="ltr" style={{ minHeight: '350px' }}>
                         {activeTab === 'dashboard' && stories.length > 0 && (
-                            <div className="w-full h-full" key={`bar-container-${stories.length}`}>
-                                <ResponsiveContainer width="100%" height="100%" debounce={100}>
+                            <div className="w-full h-full" key={`bar-container-${stories.length}`} style={{ minHeight: '350px' }}>
+                                <ResponsiveContainer width="100%" height="100%" debounce={100} minHeight={300}>
                                     <ReBarChart data={stories.slice(0, 10).map(s => ({ name: (s.title[lang] || s.title.en || s.title.ar || '').substring(0, 10), views: s.views }))}>
                                         <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                                         <XAxis dataKey="name" stroke="#888888" fontSize={12} tick={{ fill: '#888888' }} />
@@ -735,8 +736,8 @@ export const Admin: React.FC<AdminProps> = ({ lang, stories, setStories, subscri
                     </h3>
                     <div className="relative h-[350px] w-full" dir="ltr" style={{ minHeight: '350px' }}>
                         {activeTab === 'dashboard' && ageGroupData.length > 0 && (
-                            <div className="w-full h-full" key={`pie-container-${stories.length}`}>
-                                <ResponsiveContainer width="100%" height="100%" debounce={150}>
+                            <div className="w-full h-full" key={`pie-container-${stories.length}`} style={{ minHeight: '350px' }}>
+                                <ResponsiveContainer width="100%" height="100%" debounce={150} minHeight={300}>
                                     <RePieChart>
                                         <Pie
                                             data={ageGroupData}
@@ -1044,7 +1045,11 @@ export const Admin: React.FC<AdminProps> = ({ lang, stories, setStories, subscri
                             <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 overflow-hidden relative">
                                 {currentStory.coverImage ? (
                                     <div className="relative w-full h-full group">
-                                        <img src={currentStory.coverImage} alt="Preview" className="w-full h-full object-cover opacity-80" />
+                                        <img 
+                                            src={currentStory.coverImage} 
+                                            alt={`${currentStory.title?.[lang] || currentStory.title?.ar || currentStory.title?.en || 'Story'} ${isRTL ? 'غلاف' : 'cover preview'}`}
+                                            className="w-full h-full object-cover opacity-80" 
+                                        />
                                         <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 text-[10px] text-white truncate text-center backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
                                             {currentStory.coverImage.split('/').pop()}
                                         </div>
@@ -1321,7 +1326,13 @@ export const Admin: React.FC<AdminProps> = ({ lang, stories, setStories, subscri
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center flex-1">
                                         <div className="h-12 w-12 rounded-lg bg-gray-200 dark:bg-gray-700 overflow-hidden shadow-sm flex-shrink-0">
-                                            <img className="h-full w-full object-cover" src={story.coverImage} alt="" />
+                                            <img 
+                                                className="h-full w-full object-cover" 
+                                                src={story.coverImage} 
+                                                alt={`${displayTitle} ${isRTL ? 'غلاف' : 'cover'}`}
+                                                loading="lazy"
+                                                decoding="async"
+                                            />
                                         </div>
                                         <div className={`min-w-0 ${isRTL ? 'mr-4' : 'ml-4'}`}>
                                             <p className={`text-base font-bold text-gray-900 dark:text-white truncate ${lang === 'ar' && story.title[lang] ? 'font-arabic' : ''}`}>{displayTitle}</p>
@@ -1774,7 +1785,15 @@ export const Admin: React.FC<AdminProps> = ({ lang, stories, setStories, subscri
     );
 
     return (
-        <div className="min-h-screen bg-background dark:bg-dark-bg py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+        <div 
+            dir={isRTL ? 'rtl' : 'ltr'}
+            className="min-h-screen bg-background dark:bg-dark-bg py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300"
+        >
+            <SEO 
+                title={isRTL ? 'لوحة التحكم' : 'Admin Dashboard'}
+                description="Manage your stories, categories, and users."
+                lang={lang}
+            />
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white animate-fade-in">{t.title}</h1>

@@ -489,7 +489,10 @@ export const DesignStudio: React.FC<DesignStudioProps> = ({ lang }) => {
   /* ---------------- Render ---------------- */
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-dark-bg transition-colors duration-300 py-8 px-4 sm:px-6 lg:px-8">
+    <div 
+      dir={lang === 'ar' ? 'rtl' : 'ltr'}
+      className="min-h-screen bg-gray-50 dark:bg-dark-bg transition-colors duration-300 py-8 px-4 sm:px-6 lg:px-8"
+    >
       <SEO
         title={t.title}
         description={TRANSLATIONS[lang].seo.design.description}

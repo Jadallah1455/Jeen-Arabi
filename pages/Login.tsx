@@ -42,7 +42,10 @@ export const Login: React.FC<LoginProps> = ({ lang }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark-bg py-12 px-4 sm:px-6 lg:px-8">
+    <div 
+      dir={lang === 'ar' ? 'rtl' : 'ltr'}
+      className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark-bg py-12 px-4 sm:px-6 lg:px-8"
+    >
       <SEO
         title={t.loginTitle}
         description={TRANSLATIONS[lang].seo.login.description}
@@ -64,53 +67,70 @@ export const Login: React.FC<LoginProps> = ({ lang }) => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-1">
-            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">
+            <label 
+              htmlFor="login-username"
+              className="block text-sm font-bold text-gray-700 dark:text-gray-300"
+            >
               {lang === 'ar' ? 'اسم المستخدم أو البريد' : 'Username or Email'}
             </label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
-                <User size={18} />
+                <User size={18} aria-hidden="true" />
               </div>
               <input
+                id="login-username"
                 type="text"
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="block w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder-gray-400"
                 placeholder={lang === 'ar' ? 'أدخل اسم المستخدم' : 'Enter username'}
+                aria-invalid={error ? 'true' : 'false'}
+                aria-describedby={error ? 'login-error' : undefined}
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">
+            <label 
+              htmlFor="login-password"
+              className="block text-sm font-bold text-gray-700 dark:text-gray-300"
+            >
               {lang === 'ar' ? 'كلمة المرور' : 'Password'}
             </label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
-                <Lock size={18} />
+                <Lock size={18} aria-hidden="true" />
               </div>
               <input
+                id="login-password"
                 type={showPassword ? "text" : "password"}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="block w-full pl-12 pr-12 py-3 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder-gray-400"
                 placeholder="••••••••"
+                aria-invalid={error ? 'true' : 'false'}
+                aria-describedby={error ? 'login-error' : undefined}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-primary transition-colors"
-                title={showPassword ? "Hide" : "Show"}
+                aria-label={showPassword ? (lang === 'ar' ? 'إخفاء كلمة المرور' : 'Hide password') : (lang === 'ar' ? 'إظهار كلمة المرور' : 'Show password')}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
               </button>
             </div>
           </div>
 
           {error && (
-            <div className="text-red-500 dark:text-red-400 text-sm font-bold text-center bg-red-50 dark:bg-red-900/20 py-3 rounded-xl border border-red-100 dark:border-red-900/30">
+            <div 
+              id="login-error"
+              role="alert"
+              aria-live="assertive"
+              className="text-red-500 dark:text-red-400 text-sm font-bold text-center bg-red-50 dark:bg-red-900/20 py-3 rounded-xl border border-red-100 dark:border-red-900/30"
+            >
               {error}
             </div>
           )}

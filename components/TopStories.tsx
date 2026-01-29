@@ -104,17 +104,20 @@ export const TopStories: React.FC<TopStoriesProps> = ({ lang }) => {
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                             </div>
 
-                            {/* Content */}
-                            <div className="p-6">
-                                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                            {/* Content - Fixed height structure for alignment */}
+                            <div className="p-6 flex flex-col">
+                                {/* Title: max 2 lines, min height to match 2 lines */}
+                                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 line-clamp-2 min-h-[3.5rem] group-hover:text-primary transition-colors">
                                     {story.title[lang] || story.title.en}
                                 </h3>
-                                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">
+                                
+                                {/* Description: Always 3 lines for consistency */}
+                                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3 min-h-[4.5rem]">
                                     {story.description?.[lang] || story.description?.en || ''}
                                 </p>
 
                                 {/* Stats */}
-                                <div className="flex items-center justify-between text-sm">
+                                <div className="flex items-center justify-between text-sm mb-4">
                                     <div className="flex items-center gap-4">
                                         <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                                             <Star size={16} className="text-yellow-500 fill-yellow-500" />
@@ -127,8 +130,8 @@ export const TopStories: React.FC<TopStoriesProps> = ({ lang }) => {
                                     </div>
                                 </div>
 
-                                {/* Read Button */}
-                                <button className="mt-4 w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-primary-dark transition-all flex items-center justify-center gap-2 group-hover:gap-3">
+                                {/* Read Button - Now always aligned */}
+                                <button className="mt-auto w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-primary-dark transition-all flex items-center justify-center gap-2 group-hover:gap-3">
                                     {lang === 'ar' ? 'اقرأ الآن' : lang === 'fr' ? 'Lire Maintenant' : 'Read Now'}
                                     <ArrowRight size={20} className={isRTL ? 'rotate-180' : ''} />
                                 </button>

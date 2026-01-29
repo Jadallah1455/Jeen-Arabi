@@ -22,7 +22,10 @@ export const LegalPage: React.FC<LegalPageProps> = ({ lang, type }) => {
     if (!content) return null;
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-dark-bg py-16 px-4 sm:px-6 lg:px-8 animate-fade-in">
+        <div 
+            dir={isRTL ? 'rtl' : 'ltr'}
+            className="min-h-screen bg-gray-50 dark:bg-dark-bg py-16 px-4 sm:px-6 lg:px-8 animate-fade-in"
+        >
             <div className="max-w-4xl mx-auto">
                 {/* Back Button */}
                 <Link

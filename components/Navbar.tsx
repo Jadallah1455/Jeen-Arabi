@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Language } from '../types';
 import { TRANSLATIONS } from '../constants';
 import { getAvatarData } from '../constants/avatars';
-import { Globe, Menu, X, LogOut, Moon, Sun, BookOpen, Sparkles, Book, User, Bell, Heart, Trophy } from 'lucide-react';
+import { Globe, Menu, X, LogOut, Moon, Sun, BookOpen, Sparkles, Book, User, Bell, Heart, Trophy, ShieldCheck } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -95,9 +95,7 @@ export const Navbar: React.FC<NavbarProps> = ({ lang, setLang, isDark, toggleThe
     { path: '/support', label: t.support, isSupport: true },
   ];
 
-  if (isAuthenticated && isAdmin) {
-    navLinks.push({ path: '/admin', label: t.adminPanel });
-  }
+  // Removed explicit Admin Panel from navLinks as it will have a special icon
 
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
@@ -168,11 +166,19 @@ export const Navbar: React.FC<NavbarProps> = ({ lang, setLang, isDark, toggleThe
   );
 
   return (
-    <nav className="bg-white/80 dark:bg-dark-card/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 transition-all duration-300">
+    <nav 
+      className="bg-white/80 dark:bg-dark-card/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 transition-all duration-300"
+      role="navigation"
+      aria-label={lang === 'ar' ? 'التنقل الرئيسي' : (lang === 'fr' ? 'Navigation principale' : 'Main navigation')}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex items-center">
-            <Link to="/" className="flex-shrink-0 flex items-center gap-3 group">
+            <Link 
+              to="/" 
+              className="flex-shrink-0 flex items-center gap-3 group"
+              aria-label={lang === 'ar' ? 'جين عربي - الصفحة الرئيسية' : (lang === 'fr' ? 'Jeen Arabi - Page d\'accueil' : 'Jeen Arabi - Home page')}
+            >
               <div className="relative w-11 h-11 flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl shadow-lg shadow-purple-500/30 transform group-hover:rotate-6 transition-all duration-300">
                 <div className="absolute inset-0 bg-white/20 rounded-xl"></div>
                 <Book size={22} className="text-white relative z-10" strokeWidth={2.5} />
@@ -196,25 +202,37 @@ export const Navbar: React.FC<NavbarProps> = ({ lang, setLang, isDark, toggleThe
                   ? 'text-primary dark:text-primary'
                   : 'text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary'
                   }`}
+                aria-current={isActive(link.path) ? 'page' : undefined}
               >
                 {link.label}
-                <span className={`absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300 ${isActive(link.path) ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                <span className={`absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300 ${isActive(link.path) ? 'w-full' : 'w-0 group-hover:w-full'}`} aria-hidden="true"></span>
               </Link>
             ))}
 
             <div className="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-2"></div>
 
-            <button onClick={toggleTheme} className="relative p-2 w-10 h-10 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-500 overflow-hidden group">
+            <button 
+              onClick={toggleTheme} 
+              className="relative p-2 w-10 h-10 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-500 overflow-hidden group"
+              aria-label={isDark 
+                ? (lang === 'ar' ? 'تفعيل الوضع النهاري' : (lang === 'fr' ? 'Activer le mode jour' : 'Enable light mode'))
+                : (lang === 'ar' ? 'تفعيل الوضع الليلي' : (lang === 'fr' ? 'Activer le mode nuit' : 'Enable dark mode'))
+              }
+            >
               <div className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${isDark ? 'rotate-[360deg] scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'}`}>
-                <Moon size={20} className="text-indigo-500" />
+                <Moon size={20} className="text-indigo-500" aria-hidden="true" />
               </div>
               <div className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${isDark ? 'rotate-0 scale-100 opacity-100' : 'rotate-[-360deg] scale-0 opacity-0'}`}>
-                <Sun size={20} className="text-yellow-400" />
+                <Sun size={20} className="text-yellow-400" aria-hidden="true" />
               </div>
             </button>
 
-            <button onClick={cycleLang} className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:border-primary hover:text-primary transition-all text-sm font-bold group">
-              <Globe size={18} className="group-hover:rotate-12 transition-transform" />
+            <button 
+              onClick={cycleLang} 
+              className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:border-primary hover:text-primary transition-all text-sm font-bold group"
+              aria-label={lang === 'ar' ? 'تغيير اللغة' : (lang === 'fr' ? 'Changer de langue' : 'Change language')}
+            >
+              <Globe size={18} className="group-hover:rotate-12 transition-transform" aria-hidden="true" />
               <span className="uppercase">{lang}</span>
             </button>
 
@@ -223,10 +241,16 @@ export const Navbar: React.FC<NavbarProps> = ({ lang, setLang, isDark, toggleThe
                 <button
                   onClick={() => setShowNotifications(!showNotifications)}
                   className="p-2 text-gray-500 hover:text-primary transition-all relative"
+                  aria-label={lang === 'ar' ? 'الإشعارات' : (lang === 'fr' ? 'Notifications' : 'Notifications')}
+                  aria-expanded={showNotifications}
+                  aria-haspopup="true"
                 >
-                  <Bell size={22} />
+                  <Bell size={22} aria-hidden="true" />
                   {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-bounce">
+                    <span 
+                      className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-bounce"
+                      aria-label={`${unreadCount} ${lang === 'ar' ? 'إشعار جديد' : (lang === 'fr' ? 'nouvelle notification' : 'new notification')}${unreadCount > 1 ? 's' : ''}`}
+                    >
                       {unreadCount}
                     </span>
                   )}
@@ -237,32 +261,49 @@ export const Navbar: React.FC<NavbarProps> = ({ lang, setLang, isDark, toggleThe
 
             {isAuthenticated ? (
               <div className="flex items-center gap-4 ml-2">
-                <Link
-                  to={isAdmin ? "/admin" : "/dashboard"}
-                  className="p-1.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl hover:bg-primary/10 hover:text-primary transition-all overflow-hidden"
-                  title={t.myDashboard}
-                >
-                  {user?.avatar ? (
-                    <div 
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-lg"
-                        style={{ backgroundColor: getAvatarData(user.avatar).color }}
+                {isAdmin ? (
+                  <Link
+                    to="/admin"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-xl hover:bg-primary/20 transition-all font-bold border border-primary/20"
+                    title={lang === 'ar' ? 'لوحة التحكم' : 'Admin Panel'}
+                  >
+                    <ShieldCheck size={20} />
+                    <span className="hidden lg:inline text-xs uppercase tracking-tighter">{lang === 'ar' ? 'أدمن' : 'Admin'}</span>
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      to="/dashboard"
+                      className="p-1.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl hover:bg-primary/10 hover:text-primary transition-all overflow-hidden"
+                      title={t.myDashboard}
                     >
-                        {getAvatarData(user.avatar).emoji}
-                    </div>
-                  ) : (
-                    <div className="p-1">
-                        <User size={20} />
-                    </div>
-                  )}
-                </Link>
-                {user?.points !== undefined && (
-                  <div className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-sm bg-gradient-to-r from-yellow-500/10 to-orange-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900/30 animate-in fade-in slide-in-from-top-2 duration-500`} title="Points">
-                    <Trophy size={16} className="text-yellow-500" />
-                    <span>{user.points}</span>
-                  </div>
+                      {user?.avatar ? (
+                        <div 
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-lg"
+                            style={{ backgroundColor: getAvatarData(user.avatar).color }}
+                        >
+                            {getAvatarData(user.avatar).emoji}
+                        </div>
+                      ) : (
+                        <div className="p-1">
+                            <User size={20} />
+                        </div>
+                      )}
+                    </Link>
+                    {user?.points !== undefined && (
+                      <div className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-sm bg-gradient-to-r from-yellow-500/10 to-orange-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900/30 animate-in fade-in slide-in-from-top-2 duration-500`} title="Points">
+                        <Trophy size={16} className="text-yellow-500" />
+                        <span>{user.points}</span>
+                      </div>
+                    )}
+                  </>
                 )}
-                <button onClick={handleLogout} className="p-2 text-gray-500 hover:text-red-500 transition-colors" title={t.logout}>
-                  <LogOut size={20} />
+                <button 
+                  onClick={handleLogout} 
+                  className={`p-2 text-gray-500 hover:text-red-500 transition-colors ${lang === 'ar' ? 'rotate-180' : ''}`} 
+                  aria-label={t.logout}
+                >
+                  <LogOut size={20} aria-hidden="true" />
                 </button>
               </div>
             ) : (
@@ -292,8 +333,27 @@ export const Navbar: React.FC<NavbarProps> = ({ lang, setLang, isDark, toggleThe
                 {showNotifications && <NotificationDropdown />}
               </div>
             )}
-            <button onClick={toggleTheme} className="p-2 rounded-full text-gray-500 dark:text-gray-300">{isDark ? <Sun size={20} /> : <Moon size={20} />}</button>
-            <button onClick={() => setIsOpen(!isOpen)} className="p-2 rounded-md text-gray-600 dark:text-gray-300">{isOpen ? <X size={24} /> : <Menu size={24} />}</button>
+            <button 
+              onClick={toggleTheme} 
+              className="p-2 rounded-full text-gray-500 dark:text-gray-300"
+              aria-label={isDark 
+                ? (lang === 'ar' ? 'تفعيل الوضع النهاري' : (lang === 'fr' ? 'Mode jour' : 'Light mode'))
+                : (lang === 'ar' ? 'تفعيل الوضع الليلي' : (lang === 'fr' ? 'Mode nuit' : 'Dark mode'))
+              }
+            >
+              {isDark ? <Sun size={20} aria-hidden="true" /> : <Moon size={20} aria-hidden="true" />}
+            </button>
+            <button 
+              onClick={() => setIsOpen(!isOpen)} 
+              className="p-2 rounded-md text-gray-600 dark:text-gray-300"
+              aria-label={isOpen 
+                ? (lang === 'ar' ? 'إغلاق القائمة' : (lang === 'fr' ? 'Fermer le menu' : 'Close menu'))
+                : (lang === 'ar' ? 'فتح القائمة' : (lang === 'fr' ? 'Ouvrir le menu' : 'Open menu'))
+              }
+              aria-expanded={isOpen}
+            >
+              {isOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
+            </button>
           </div>
         </div>
       </div>
@@ -310,7 +370,25 @@ export const Navbar: React.FC<NavbarProps> = ({ lang, setLang, isDark, toggleThe
             ))}
           </div>
           {isAuthenticated ? (
-            <button onClick={handleLogout} className="w-full text-right px-4 py-3 font-bold text-red-500 bg-red-50 dark:bg-red-900/20 rounded-xl">{t.logout}</button>
+            <div className="space-y-3">
+              {isAdmin && (
+                <Link 
+                  to="/admin" 
+                  onClick={() => setIsOpen(false)} 
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 font-bold text-primary bg-primary/10 rounded-xl border border-primary/20"
+                >
+                  <ShieldCheck size={20} />
+                  {lang === 'ar' ? 'لوحة التحكم (أدمن)' : 'Admin Panel'}
+                </Link>
+              )}
+              <button 
+                onClick={handleLogout} 
+                className="flex items-center justify-center gap-2 w-full px-4 py-3 font-bold text-red-500 bg-red-50 dark:bg-red-900/20 rounded-xl"
+              >
+                <LogOut size={20} className={lang === 'ar' ? 'rotate-180' : ''} />
+                {t.logout}
+              </button>
+            </div>
           ) : (
             <Link to="/login" onClick={() => setIsOpen(false)} className="block w-full text-center px-4 py-3 font-bold text-white bg-primary rounded-xl">{t.signIn}</Link>
           )}

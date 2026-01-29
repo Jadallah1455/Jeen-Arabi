@@ -238,6 +238,23 @@ const saveQuizResult = async (req, res) => {
         const { score, total } = req.body;
         const userId = req.user.id;
 
+        // Critical Security: Validate quiz scores to prevent manipulation
+        if (!score && score !== 0 || !total || typeof score !== 'number' || typeof total !== 'number') {
+            return res.status(400).json({ message: 'Invalid quiz data format' });
+        }
+
+        if (score > total) {
+            return res.status(400).json({ message: 'Score cannot exceed total questions' });
+        }
+
+        if (score < 0 || total < 1) {
+            return res.status(400).json({ message: 'Invalid score or total value' });
+        }
+
+        if (total > 100) { // Reasonable upper limit for quiz questions
+            return res.status(400).json({ message: 'Suspicious quiz total detected' });
+        }
+
         const [userStory] = await UserStory.findOrCreate({
             where: { UserId: userId, StoryId: storyId }
         });

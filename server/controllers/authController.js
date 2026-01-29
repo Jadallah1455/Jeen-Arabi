@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { createNotification } = require('./notificationController');
 const dnsHelper = require('dns').promises;
+const { sanitizeInput } = require('../middleware/validationMiddleware');
 
 const DISPOSABLE_DOMAINS = [
     'mailinator.com', 'temp-mail.org', 'guerrillamail.com', '10minutemail.com',
@@ -44,7 +45,10 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = async (req, res) => {
-    const { username, email, password } = req.body;
+    // Sanitize inputs to prevent XSS
+    const username = sanitizeInput(req.body.username);
+    const email = sanitizeInput(req.body.email);
+    const password = req.body.password; // Don't sanitize password (may contain special chars)
 
     try {
         const { valid, message } = await validateEmail(email);

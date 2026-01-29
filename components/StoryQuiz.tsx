@@ -84,6 +84,23 @@ export const StoryQuiz: React.FC<StoryQuizProps> = ({ quizData, onClose, onCompl
         close: { ar: 'خروج', en: 'Close', fr: 'Fermer' }
     };
 
+    // ESC key handler and scroll prevention
+    React.useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onClose();
+            }
+        };
+
+        document.addEventListener('keydown', handleEscape);
+        document.body.style.overflow = 'hidden';
+
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+            document.body.style.overflow = '';
+        };
+    }, [onClose]);
+
     const handleOptionClick = (index: number) => {
         if (showFeedback) return;
         setSelectedOption(index);
@@ -138,14 +155,25 @@ export const StoryQuiz: React.FC<StoryQuizProps> = ({ quizData, onClose, onCompl
         const canSavePoints = !useAuth().isAuthenticated;
         
         return (
-            <div className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+            <div 
+                className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+                onClick={onClose}
+                role="presentation"
+            >
                 <motion.div 
                     initial={{ scale: 0.5, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     className="bg-white dark:bg-dark-card w-full max-w-lg rounded-3xl p-8 text-center shadow-2xl border-4 border-yellow-400"
+                    onClick={(e) => e.stopPropagation()}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="quiz-results-title"
                 >
-                    <Award size={80} className="mx-auto text-yellow-500 mb-6 animate-bounce" />
-                    <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">
+                    <Award size={80} className="mx-auto text-yellow-500 mb-6 animate-bounce" aria-hidden="true" />
+                    <h2 
+                        id="quiz-results-title"
+                        className="text-4xl font-black text-gray-900 dark:text-white mb-4"
+                    >
                         {score === quizData.length ? (lang === 'ar' ? '🌟 رائع جداً! 🌟' : '🌟 SUPER! 🌟') : (lang === 'ar' ? 'عمل جيد! 👍' : 'Good Job! 👍')}
                     </h2>
                     <p className="text-2xl font-bold text-gray-600 dark:text-gray-300 mb-4">
@@ -186,14 +214,16 @@ export const StoryQuiz: React.FC<StoryQuizProps> = ({ quizData, onClose, onCompl
                                 setShowFeedback(false);
                             }}
                             className="flex items-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-xl font-bold hover:bg-gray-200"
+                            aria-label={t.playAgain[lang]}
                         >
-                            <RefreshCw size={20} /> {t.playAgain[lang]}
+                            <RefreshCw size={20} aria-hidden="true" /> {t.playAgain[lang]}
                         </button>
                         <button 
                             onClick={onClose}
                             className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary-dark shadow-lg shadow-primary/30"
+                            aria-label={t.close[lang]}
                         >
-                            <XCircle size={20} /> {t.close[lang]}
+                            <XCircle size={20} aria-hidden="true" /> {t.close[lang]}
                         </button>
                     </div>
                 </motion.div>
@@ -204,12 +234,20 @@ export const StoryQuiz: React.FC<StoryQuizProps> = ({ quizData, onClose, onCompl
     const question = quizData[currentQuestion];
 
     return (
-        <div className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div 
+            className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+            onClick={onClose}
+            role="presentation"
+        >
             <motion.div 
                 key={currentQuestion}
                 initial={{ x: 50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 className="bg-white dark:bg-dark-card w-full max-w-2xl rounded-3xl p-6 md:p-10 shadow-2xl relative overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="quiz-question-title"
             >
                 {/* Progress Bar */}
                 <div className="absolute top-0 left-0 right-0 h-2 bg-gray-100 dark:bg-gray-800">

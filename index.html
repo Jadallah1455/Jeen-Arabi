@@ -19,8 +19,31 @@
     <!-- Performance Preloading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- DNS Prefetch for API and CDNs -->
+    <link rel="dns-prefetch" href="https://kids.genarabi.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600;700&family=Noto+Kufi+Arabic:wght@300;400;600;700&display=swap" />
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600;700&family=Noto+Kufi+Arabic:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+      (function() {
+        try {
+          var savedLang = localStorage.getItem('jeen-arabi-lang');
+          var lang = 'ar';
+          if (savedLang && ['ar', 'en', 'fr'].includes(savedLang)) {
+            lang = savedLang;
+          } else {
+            var browserLang = navigator.language.split('-')[0];
+            if (['ar', 'en', 'fr'].includes(browserLang)) lang = browserLang;
+          }
+          document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+          document.documentElement.lang = lang;
+        } catch (e) {}
+      })();
+    </script>
+
     <style>
       /* Smooth transitions for theme switching */
       body {

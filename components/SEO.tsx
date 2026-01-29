@@ -34,6 +34,11 @@ export const SEO: React.FC<SEOProps> = ({
             {keywords && <meta name="keywords" content={keywords} />}
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
+            
+            {/* SEO & Robots */}
+            <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+            <meta name="googlebot" content="index, follow" />
+            <meta name="bingbot" content="index, follow" />
 
             {/* Open Graph / Facebook / WhatsApp */}
             <meta property="og:type" content={type} />

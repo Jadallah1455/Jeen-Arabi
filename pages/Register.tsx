@@ -52,7 +52,10 @@ export const Register: React.FC<RegisterProps> = ({ lang }) => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark-bg py-12 px-4 sm:px-6 lg:px-8">
+        <div 
+            dir={lang === 'ar' ? 'rtl' : 'ltr'}
+            className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark-bg py-12 px-4 sm:px-6 lg:px-8"
+        >
             <SEO
                 title={t.title}
                 description={t.subtitle}
@@ -78,71 +81,95 @@ export const Register: React.FC<RegisterProps> = ({ lang }) => {
 
                 <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
                     <div className="space-y-1">
-                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">
+                        <label 
+                            htmlFor="register-username"
+                            className="block text-sm font-bold text-gray-700 dark:text-gray-300"
+                        >
                             {t.username}
                         </label>
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
-                                <User size={18} />
+                                <User size={18} aria-hidden="true" />
                             </div>
                             <input
+                                id="register-username"
                                 type="text"
                                 required
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 className="block w-full pl-12 pr-4 py-3.5 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                                 placeholder={lang === 'ar' ? 'مثال: محمد' : 'e.g. jameel'}
+                                aria-invalid={error ? 'true' : 'false'}
+                                aria-describedby={error ? 'register-error' : undefined}
                             />
                         </div>
                     </div>
 
                     <div className="space-y-1">
-                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">
+                        <label 
+                            htmlFor="register-email"
+                            className="block text-sm font-bold text-gray-700 dark:text-gray-300"
+                        >
                             {t.email}
                         </label>
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
-                                <Mail size={18} />
+                                <Mail size={18} aria-hidden="true" />
                             </div>
                             <input
+                                id="register-email"
                                 type="email"
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="block w-full pl-12 pr-4 py-3.5 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                                 placeholder="email@example.com"
+                                aria-invalid={error ? 'true' : 'false'}
+                                aria-describedby={error ? 'register-error' : undefined}
                             />
                         </div>
                     </div>
 
                     <div className="space-y-1">
-                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">
+                        <label 
+                            htmlFor="register-password"
+                            className="block text-sm font-bold text-gray-700 dark:text-gray-300"
+                        >
                             {t.password}
                         </label>
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
-                                <Lock size={18} />
+                                <Lock size={18} aria-hidden="true" />
                             </div>
                             <input
+                                id="register-password"
                                 type={showPassword ? "text" : "password"}
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="block w-full pl-12 pr-12 py-3.5 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                                 placeholder="••••••••"
+                                aria-invalid={error ? 'true' : 'false'}
+                                aria-describedby={error ? 'register-error' : undefined}
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
                                 className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-primary transition-colors"
+                                aria-label={showPassword ? (lang === 'ar' ? 'إخفاء كلمة المرور' : 'Hide password') : (lang === 'ar' ? 'إظهار كلمة المرور' : 'Show password')}
                             >
-                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {showPassword ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
                             </button>
                         </div>
                     </div>
 
                     {error && (
-                        <div className="text-red-500 text-sm font-bold text-center bg-red-50 dark:bg-red-900/20 py-3 rounded-xl border border-red-100 dark:border-red-900/30">
+                        <div 
+                            id="register-error"
+                            role="alert"
+                            aria-live="assertive"
+                            className="text-red-500 text-sm font-bold text-center bg-red-50 dark:bg-red-900/20 py-3 rounded-xl border border-red-100 dark:border-red-900/30"
+                        >
                             {error}
                         </div>
                     )}

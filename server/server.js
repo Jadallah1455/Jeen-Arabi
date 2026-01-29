@@ -68,11 +68,31 @@ const authLimiter = rateLimit({
 });
 app.use('/api/auth', authLimiter);
 
+// CSRF Protection (Critical Security Fix)
+const csrf = require('csurf');
+const csrfProtection = csrf({ cookie: true });
+
+// CSRF token endpoint (must be unprotected)
+app.get('/api/csrf-token', csrfProtection, (req, res) => {
+    res.json({ csrfToken: req.csrfToken() });
+});
+
+// Apply CSRF protection to state-changing routes
+app.use('/api/auth/register', csrfProtection);
+app.use('/api/auth/login', csrfProtection);
+app.use('/api/users', csrfProtection);
+app.use('/api/stories', csrfProtection);
+app.use('/api/reviews', csrfProtection);
+app.use('/api/favorites', csrfProtection);
+
 // Middleware
 app.use(cors({
-    origin: '*', // Allow all origins
+    origin: process.env.NODE_ENV === 'production' 
+        ? process.env.ALLOWED_ORIGIN || 'https://kids.genarabi.com'
+        : '*',
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token']
 }));
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
@@ -84,6 +104,16 @@ app.use((req, res, next) => {
     res.setTimeout(600000); // 10 minutes
     next();
 });
+
+// Force HTTPS in Production
+if (process.env.NODE_ENV === 'production') {
+    app.use((req, res, next) => {
+        if (req.header('x-forwarded-proto') !== 'https') {
+            return res.redirect(`https://${req.header('host')}${req.url}`);
+        }
+        next();
+    });
+}
 
 // Analytics Middleware (before routes)
 app.use(analyticsMiddleware);

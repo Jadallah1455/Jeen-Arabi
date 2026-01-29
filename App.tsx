@@ -31,16 +31,22 @@ function App() {
   const [lang, setLang] = useState<Language>(() => {
     // 1. Check LocalStorage (User Preference)
     const savedLang = localStorage.getItem('jeen-arabi-lang') as Language;
-    if (savedLang && ['ar', 'en', 'fr'].includes(savedLang)) return savedLang;
+    if (savedLang && ['ar', 'en', 'fr'].includes(savedLang)) {
+      document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.lang = savedLang;
+      return savedLang;
+    }
 
     // 2. Check Browser Language
     const browserLang = navigator.language.split('-')[0];
-    if (browserLang === 'ar') return 'ar';
-    if (browserLang === 'fr') return 'fr';
-    if (browserLang === 'en') return 'en';
+    let initialLang: Language = 'ar';
+    if (browserLang === 'ar') initialLang = 'ar';
+    else if (browserLang === 'fr') initialLang = 'fr';
+    else if (browserLang === 'en') initialLang = 'en';
 
-    // 3. Default
-    return 'ar';
+    document.documentElement.dir = initialLang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = initialLang;
+    return initialLang;
   });
 
   useEffect(() => {
@@ -183,8 +189,38 @@ function App() {
 
   return (
     <Router>
-      <Toaster position="top-center" reverseOrder={false} />
-      <div className={`min-h-screen ${lang === 'ar' ? 'font-arabic' : 'font-sans'} bg-background dark:bg-dark-bg text-gray-900 dark:text-gray-100 transition-colors duration-300 flex flex-col relative`}>
+      {/* Skip Navigation Links for Keyboard Users */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:bg-primary focus:text-white focus:px-6 focus:py-3 focus:rounded-xl focus:font-bold focus:shadow-2xl focus:outline-none focus:ring-4 focus:ring-primary/30"
+      >
+        {lang === 'ar' ? 'انتقل إلى المحتوى الرئيسي' : 'Skip to main content'}
+      </a>
+      
+      <Toaster 
+        position="top-center" 
+        reverseOrder={false}
+        toastOptions={{
+          // Add role and aria-live for screen reader announcements
+          ariaProps: {
+            role: 'status',
+            'aria-live': 'polite',
+          },
+        }}
+      />
+      
+      {/* Screen reader live region for announcements */}
+      <div 
+        role="status" 
+        aria-live="polite" 
+        aria-atomic="true"
+        className="sr-only"
+      />
+      
+      <div 
+        dir={lang === 'ar' ? 'rtl' : 'ltr'}
+        className={`min-h-screen ${lang === 'ar' ? 'font-arabic' : 'font-sans'} bg-background dark:bg-dark-bg text-gray-900 dark:text-gray-100 transition-colors duration-300 flex flex-col relative`}
+      >
 
         <FloatingShapes />
         <Navbar
@@ -198,11 +234,20 @@ function App() {
 
         <div className="flex-grow">
           <Suspense fallback={
-            <div className="flex justify-center items-center h-64">
-              <Loader2 className="animate-spin text-primary" size={32} />
+            <div 
+              className="flex justify-center items-center h-64"
+              role="status"
+              aria-live="polite"
+              aria-label={lang === 'ar' ? 'جاري التحميل...' : 'Loading...'}
+            >
+              <Loader2 className="animate-spin text-primary" size={32} aria-hidden="true" />
+              <span className="sr-only">
+                {lang === 'ar' ? 'جاري تحميل الصفحة، يرجى الانتظار' : 'Loading page, please wait'}
+              </span>
             </div>
           }>
-            <Routes>
+            <main id="main-content" role="main">
+              <Routes>
               <Route path="/" element={<Home lang={lang} />} />
               <Route path="/library" element={<Library lang={lang} stories={stories} categories={categories} onUpdateStats={handleUpdateStats} />} />
               <Route path="/library/:id" element={<Library lang={lang} stories={stories} categories={categories} onUpdateStats={handleUpdateStats} />} />
@@ -226,6 +271,7 @@ function App() {
 
               <Route path="*" element={<NotFound lang={lang} />} />
             </Routes>
+            </main>
           </Suspense>
         </div>
 
@@ -273,9 +319,9 @@ function App() {
                     }, 60 * 60 * 1000); // 1 hour
                   }}
                   className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full transition-all shadow-lg z-10"
-                  title={lang === 'ar' ? 'إغلاق' : 'Close'}
+                  aria-label={lang === 'ar' ? 'إغلاق إعلان التثبيت' : 'Close install banner'}
                 >
-                  <X size={16} />
+                  <X size={16} aria-hidden="true" />
                 </button>
               </div>
             </div>

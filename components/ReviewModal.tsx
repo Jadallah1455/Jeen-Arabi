@@ -34,6 +34,26 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
     const [selectedAvatar, setSelectedAvatar] = useState(GUEST_AVATARS[0].id);
     const [submitting, setSubmitting] = useState(false);
 
+    // ESC key handler for accessibility
+    React.useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && isOpen) {
+                onClose();
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener('keydown', handleEscape);
+            // Prevent background scroll
+            document.body.style.overflow = 'hidden';
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+            document.body.style.overflow = '';
+        };
+    }, [isOpen, onClose]);
+
     if (!isOpen) return null;
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -80,11 +100,24 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-dark-card rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div 
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={onClose}
+            role="presentation"
+        >
+            <div 
+                className="bg-white dark:bg-dark-card rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="review-modal-title"
+            >
                 {/* Header */}
                 <div className="sticky top-0 bg-white dark:bg-dark-card border-b dark:border-gray-700 p-6 flex items-center justify-between">
-                    <h2 className="text-2xl font-black text-gray-900 dark:text-white">
+                    <h2 
+                        id="review-modal-title"
+                        className="text-2xl font-black text-gray-900 dark:text-white"
+                    >
                         {type === 'story'
                             ? reviewText.rateStory || (lang === 'ar' ? 'قيّم القصة' : 'Rate Story')
                             : reviewText.writeReview || (lang === 'ar' ? 'اكتب مراجعة' : 'Write Review')
@@ -93,8 +126,9 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                     <button
                         onClick={onClose}
                         className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+                        aria-label={lang === 'ar' ? 'إغلاق' : (lang === 'fr' ? 'Fermer' : 'Close')}
                     >
-                        <X size={24} />
+                        <X size={24} aria-hidden="true" />
                     </button>
                 </div>
 
@@ -103,17 +137,22 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                     {/* Guest Name (if not logged in) */}
                     {!isLoggedIn && (
                         <div>
-                            <label className="block font-bold mb-2 text-gray-900 dark:text-white">
+                            <label 
+                                htmlFor="guest-name-input"
+                                className="block font-bold mb-2 text-gray-900 dark:text-white"
+                            >
                                 {lang === 'ar' ? 'اسمك' : lang === 'fr' ? 'Votre Nom' : 'Your Name'}
-                                <span className="text-red-500">*</span>
+                                <span className="text-red-500" aria-label={lang === 'ar' ? 'مطلوب' : 'required'}> *</span>
                             </label>
                             <input
+                                id="guest-name-input"
                                 type="text"
                                 value={guestName}
                                 onChange={(e) => setGuestName(e.target.value)}
                                 placeholder={lang === 'ar' ? 'أدخل اسمك...' : 'Enter your name...'}
                                 className="w-full px-4 py-3 border dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent"
                                 maxLength={50}
+                                aria-required="true"
                             />
                         </div>
                     )}
@@ -137,12 +176,13 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                                                 : 'hover:scale-105 shadow-md'
                                         }`}
                                         style={{ backgroundColor: avatar.color }}
-                                        title={avatar.name}
+                                        aria-label={`${lang === 'ar' ? 'اختر' : 'Select'} ${avatar.name}`}
+                                        aria-pressed={selectedAvatar === avatar.id}
                                     >
                                         {avatar.emoji}
                                         {selectedAvatar === avatar.id && (
                                             <div className="absolute -top-1 -right-1 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                                                <span className="text-white text-xs">✓</span>
+                                                <span className="text-white text-xs" aria-hidden="true">✓</span>
                                             </div>
                                         )}
                                     </button>
@@ -157,7 +197,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                             {reviewText.rating || (lang === 'ar' ? 'التقييم' : 'Rating')}
                             <span className="text-red-500">*</span>
                         </label>
-                        <div className="flex gap-2" dir="ltr">
+                        <div className="flex gap-2" dir="ltr" role="radiogroup" aria-label={lang === 'ar' ? 'التقييم من 1 إلى 5 نجوم' : 'Rating from 1 to 5 stars'}>
                             {[1, 2, 3, 4, 5].map(star => (
                                 <button
                                     key={star}
@@ -166,6 +206,10 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                                     onMouseEnter={() => setHoveredRating(star)}
                                     onMouseLeave={() => setHoveredRating(0)}
                                     className="transition-transform hover:scale-125"
+                                    aria-label={`${star} ${lang === 'ar' ? 'نجوم' : 'stars'}`}
+                                    aria-pressed={rating === star}
+                                    role="radio"
+                                    aria-checked={rating === star}
                                 >
                                     <Star
                                         size={40}
@@ -174,6 +218,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                                                 ? 'text-yellow-400 fill-yellow-400'
                                                 : 'text-gray-300'
                                         } transition-colors`}
+                                        aria-hidden="true"
                                     />
                                 </button>
                             ))}
@@ -189,6 +234,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                             </span>
                         </label>
                         <textarea
+                            id="review-comment"
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
                             placeholder={
@@ -202,8 +248,9 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                             rows={4}
                             maxLength={500}
                             dir={isRTL ? 'rtl' : 'ltr'}
+                            aria-describedby="char-count"
                         />
-                        <p className="text-xs text-gray-400 mt-1 text-right">
+                        <p id="char-count" className="text-xs text-gray-400 mt-1 text-right">
                             {comment.length}/500
                         </p>
                     </div>
